@@ -1,7 +1,9 @@
-import tables, strformat, sugar
+import tables, strformat, sugar, os, options
 import coral/[camera, palette_colors, renderer, memoize]
 
 import pixie, boxy, opengl
+
+from nim_tiled import Tileset, name
 
 type
   ImageId = string
@@ -34,6 +36,21 @@ proc loadImage*(artist: Artist, imagePath: string,
   artist.images[imageId] = result
   artist.bxy.addImage(imageId, result)
 
+proc addTileset*(artist: Artist, ts: Tileset): Tileset {.discardable.} =
+  let key = &"{ts.name}"
+  if not artist.bxy.contains(key) and ts.image.isSome:
+    let tsimage = ts.image.get()
+
+    let path = getCurrentDir()
+      .joinPath("res")
+      .joinPath("maps")
+      .joinPath("tilemaps")
+      .joinPath(tsimage.source)
+
+    let image = readImage(path)
+    artist.bxy.addImage(key, image)
+    artist.images[key] = image
+
 template addImageIfNew(artist: Artist, key: string, renderFn: untyped) =
   if not artist.bxy.contains(key):
     artist.bxy.addImage(key, renderFn())
@@ -53,6 +70,15 @@ template beginDrawing*(artist: Artist, windowSize: IVec2, fn: untyped) =
 
   restoreTransform(artist.bxy)
   endFrame(artist.bxy)
+
+template drawOrRender*(artist: Artist, imageId: string, x, y, w, h: float,
+    body: untyped) =
+  if not artist.bxy.contains(imageId):
+    let image = newImage(w.int, h.int)
+    let ctx {.inject.} = newContext(image)
+    body
+    artist.bxy.addImage(imageId, image)
+  artist.bxy.drawImage(imageId, pos = vec2(x, y), BrightWhite)
 
 template transform*(artist: Artist, pos, size: Vec2, rotation = 0.0,
     body: untyped) =

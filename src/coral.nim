@@ -20,6 +20,9 @@ proc newArtist*(): Artist =
     images: Table[ImageId, Image](),
   )
 
+proc getCamera*(artist: Artist): Camera =
+  artist.camera
+
 proc spriteKey(i: ImageId, r: Rect): string {.inline.} = &"{i}{r.x}{r.y}{r.w}{r.h}"
 proc rectKey*(size: Vec2): string {.inline.} = &"rect{size.x}{size.y}"
 

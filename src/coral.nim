@@ -1,7 +1,7 @@
 import tables, strformat, sugar
-import coral/[artist, camera, palette_colors, renderer, memoize]
+import coral/[camera, palette_colors, renderer, memoize]
 
-import pixie, boxy
+import pixie, boxy, opengl
 
 type
   ImageId = string
@@ -21,16 +21,41 @@ proc newArtist*(): Artist =
 proc spriteKey(i: ImageId, r: Rect): string {.inline.} = &"{i}{r.x}{r.y}{r.w}{r.h}"
 proc rectKey*(size: Vec2): string {.inline.} = &"rect{size.x}{size.y}"
 
+proc clear*(artist: Artist, color = color(0.0, 0.0, 0.0, 1.0)) =
+  glClearColor(color.r.float32, color.g.float32, color.b.float32,
+      color.a.float32)
+  glClear(GL_COLOR_BUFFER_BIT)
+
+proc loadImage*(artist: Artist, imagePath: string,
+    imageId: string): Image {.discardable.} =
+  if artist.bxy.contains(imageId):
+    return artist.images[imageId]
+  result = readImage(imagePath)
+  artist.images[imageId] = result
+  artist.bxy.addImage(imageId, result)
+
 template addImageIfNew(artist: Artist, key: string, renderFn: untyped) =
   if not artist.bxy.contains(key):
     artist.bxy.addImage(key, renderFn())
 
-template beginDrawing*(artist: Artist, size: IVec2, fn: untyped) =
-  beginFrame(artist.bxy, size)
+template beginDrawing*(artist: Artist, windowSize: IVec2, fn: untyped) =
+  updateCamera(artist.camera, windowSize)
+
+  beginFrame(artist.bxy, windowSize)
+  saveTransform(artist.bxy)
+
+  scale(artist.bxy, artist.camera.zoom)
+  translate(artist.bxy, artist.camera.lookAt + artist.camera.size * 0.5 /
+      artist.camera.zoom)
+
+  artist.clear()
   fn()
+
+  restoreTransform(artist.bxy)
   endFrame(artist.bxy)
 
-template transform*(artist: Artist, pos, size: Vec2, rotation = 0.0, body: untyped) =
+template transform*(artist: Artist, pos, size: Vec2, rotation = 0.0,
+    body: untyped) =
   if rotation != 0.0:
     artist.bxy.saveTransform()
 

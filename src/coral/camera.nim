@@ -1,19 +1,19 @@
 import vmath, bumpy
 
 type
-  Camera* = object
+  Camera* = ref object
     lookAt*: Vec2
     zoom*: float = 1.0
     size*: Vec2
     resized = false
 
-proc follow*(camera: var Camera, point: Vec2, dt: float) =
+proc follow*(camera: Camera, point: Vec2, dt: float) =
   camera.lookAt = mix(camera.lookAt, -point, dt)
 
-proc zoomIn*(camera: var Camera, scale: float) =
+proc zoomIn*(camera: Camera, scale: float) =
   camera.zoom *= scale
 
-proc zoomOut*(camera: var Camera, scale: float) =
+proc zoomOut*(camera: Camera, scale: float) =
   camera.zoom /= scale
 
 proc left*(camera: Camera): float =
@@ -34,7 +34,7 @@ proc bounds*(camera: Camera): Rect =
 proc withinView*(camera: Camera, r: Rect): bool =
   r.overlaps(camera.bounds)
 
-proc update*(camera: var Camera, windowSize: IVec2) =
+proc updateCamera*(camera: Camera, windowSize: IVec2) =
   if vec2(windowSize) != camera.size:
     camera.size = vec2(windowSize.x.float, windowSize.y.float)
     camera.resized = true

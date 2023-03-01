@@ -8,7 +8,7 @@ from nim_tiled import Tileset, name
 type
   ImageId = string
 
-  Artist = ref object
+  Artist* = ref object
     bxy: Boxy
     camera: Camera
     images: Table[ImageId, Image]

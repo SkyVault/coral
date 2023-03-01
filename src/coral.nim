@@ -97,6 +97,10 @@ template transform*(artist: Artist, pos, size: Vec2, rotation = 0.0,
   if rotation != 0.0:
     artist.bxy.restoreTransform()
 
+proc drawImage*(artist: Artist, pos: Vec2, imageId: string,
+    tint = BrightWhite) =
+  artist.bxy.drawImage(imageId, pos = pos, tint)
+
 proc drawSprite*(artist: Artist, pos: Vec2, imageId: string, region: Rect,
     tint = BrightWhite, rotation = 0.0) =
   let key = spriteKey(imageId, region)

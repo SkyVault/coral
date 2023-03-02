@@ -5,9 +5,9 @@
 #
 # To run these tests, simply execute `nimble test`.
 
-import unittest, windy, opengl, chroma, vmath
+import unittest, windy, opengl, chroma, vmath, tables
 
-import coral/[artist, palette_colors]
+import coral/[artist, palette, palette_colors, resources]
 import coral
 
 test "can draw cool stuff":
@@ -15,7 +15,7 @@ test "can draw cool stuff":
   makeContextCurrent(window)
   loadExtensions()
 
-  let artist = newArtist()
+  let artist = newArtist(initResourcePackDef())
 
   var counter = 0.0
 

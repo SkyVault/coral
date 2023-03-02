@@ -23,6 +23,9 @@ type
 proc initResourcePack*(): ResourcePack =
   result = initTable[ResourceId, Resource]()
 
+proc initResourcePackDef*(): ResourcePackDef =
+  initTable[ResourceId, (ResourceKind, ResourcePath)]()
+
 proc loadImageResource*(id: ResourceId, path: string): Resource =
   result.path = path
   result.id = id

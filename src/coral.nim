@@ -13,11 +13,11 @@ type
     camera: Camera
     resourcePack: ResourcePack
 
-proc newArtist*(resourcePack = initResourcePack()): Artist =
+proc newArtist*(packDef: ResourcePackDef): Artist =
   result = Artist(
     bxy: newBoxy(),
     camera: Camera(),
-    resourcePack: resourcePack,
+    resourcePack: loadResourcePack(packDef),
   )
 
 proc getCamera*(artist: Artist): Camera =

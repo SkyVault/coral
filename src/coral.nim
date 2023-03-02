@@ -114,3 +114,10 @@ proc drawRect*(artist: Artist, pos, size: Vec2, tint = BrightWhite,
   addImageIfNew(artist, key, () => renderRect(size, cornerRadius))
   transform(artist, pos, size, rotation):
     artist.bxy.drawImage(key, pos = pos, tint)
+
+proc drawLineRect*(artist: Artist, pos, size: Vec2, tint = BrightWhite,
+    rotation = 0.0, cornerRadius = 0.0) =
+  let key = rectKey(size)
+  addImageIfNew(artist, key, () => renderLineRect(size, cornerRadius))
+  transform(artist, pos, size, rotation):
+    artist.bxy.drawImage(key, pos = pos, tint)

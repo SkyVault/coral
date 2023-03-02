@@ -1,3 +1,5 @@
+import chroma
+
 const BrightWhite* = color(1.0, 1.0, 1.0, 1.0)
 const Transparent* = color(0.0, 0.0, 0.0, 0.0)
 

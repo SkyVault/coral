@@ -1,5 +1,5 @@
 import tables, strformat, sugar, os, options
-import coral/[camera, palette_colors, renderer, memoize]
+import coral/[camera, palette_colors, renderer, memoize, resources]
 
 import pixie, boxy, opengl
 
@@ -11,13 +11,13 @@ type
   Artist* = ref object
     bxy: Boxy
     camera: Camera
-    images: Table[ImageId, Image]
+    resourcePack: ResourcePack
 
-proc newArtist*(): Artist =
+proc newArtist*(resourcePack = initResourcePack()): Artist =
   result = Artist(
     bxy: newBoxy(),
     camera: Camera(),
-    images: Table[ImageId, Image](),
+    resourcePack: resourcePack,
   )
 
 proc getCamera*(artist: Artist): Camera =
@@ -34,9 +34,10 @@ proc clear*(artist: Artist, color = color(0.0, 0.0, 0.0, 1.0)) =
 proc loadImage*(artist: Artist, imagePath: string,
     imageId: string): Image {.discardable.} =
   if artist.bxy.contains(imageId):
-    return artist.images[imageId]
+    return artist.resourcePack[imageId].image
   result = readImage(imagePath)
-  artist.images[imageId] = result
+  artist.resourcePack[imageId] = Resource(kind: image, id: imageId,
+      path: imagePath, image: result)
   artist.bxy.addImage(imageId, result)
 
 proc addTileset*(artist: Artist, ts: Tileset): Tileset {.discardable.} =
@@ -52,7 +53,7 @@ proc addTileset*(artist: Artist, ts: Tileset): Tileset {.discardable.} =
 
     let image = readImage(path)
     artist.bxy.addImage(key, image)
-    artist.images[key] = image
+    artist.resourcePack[key] = Resource(kind: image, id: key, path: path, image: image)
 
 template addImageIfNew(artist: Artist, key: string, renderFn: untyped) =
   if not artist.bxy.contains(key):
@@ -104,7 +105,7 @@ proc drawImage*(artist: Artist, pos: Vec2, imageId: string,
 proc drawSprite*(artist: Artist, pos: Vec2, imageId: string, region: Rect,
     tint = BrightWhite, rotation = 0.0) =
   let key = spriteKey(imageId, region)
-  addImageIfNew(artist, key, () => renderSprite(artist.images[imageId], region))
+  addImageIfNew(artist, key, () => renderSprite(artist.resourcePack[imageId].image, region))
   artist.bxy.drawImage(key, pos = pos, tint)
 
 proc drawRect*(artist: Artist, pos, size: Vec2, tint = BrightWhite,

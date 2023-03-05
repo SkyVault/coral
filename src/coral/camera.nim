@@ -23,7 +23,8 @@ proc top*(camera: Camera): float = -camera.lookAt.y - (camera.size.y / 2.0) / ca
 proc bottom*(camera: Camera): float = -camera.lookAt.y + (camera.size.y / 2.0) / camera.zoom
 
 proc bounds*(camera: Camera): Rect =
-  result = rect(camera.left(), camera.top(), camera.size.x, camera.size.y)
+  result = rect(camera.left(), camera.top(), camera.size.x / camera.zoom,
+      camera.size.y / camera.zoom)
 
 proc withinView*(camera: Camera, r: Rect): bool =
   r.overlaps(camera.bounds)

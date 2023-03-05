@@ -7,11 +7,11 @@
 
 import unittest, windy, opengl, chroma, vmath, tables
 
-import coral/[artist, palette, palette_colors, resources]
+import coral/[artist, palette, palette_colors, resources, camera]
 import coral
 
 test "can draw cool stuff":
-  let window = newWindow("Hello", ivec2(1280, 720))
+  let window = newWindow("Hello", ivec2(512, 512))
   makeContextCurrent(window)
   loadExtensions()
 
@@ -20,6 +20,8 @@ test "can draw cool stuff":
   var counter = 0.0
 
   while window.closeRequested == false:
+    echo artist.getCamera().bounds
+
     beginDrawing(artist, ivec2(512, 512)) do ():
       const M = 30.0
       for i in 1..30:
@@ -29,7 +31,13 @@ test "can draw cool stuff":
           vec2(128-i.float, 128-i.float), cornerRadius = 8,
               tint = LightGreen.darken((i.float/M) * 0.35), rotation = counter * 0.01)
 
+      artist.drawLineRect(vec2(-16.0), vec2(32.0))
+
+    artist.getCamera().follow(vec2(0.0, 0.0), 0.016)
+
     counter += 1.0
+
+    artist.getCamera().updateCamera(ivec2(512, 512))
 
     pollEvents()
     swapBuffers(window)

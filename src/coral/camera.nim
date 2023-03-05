@@ -16,17 +16,11 @@ proc zoomIn*(camera: Camera, scale: float) =
 proc zoomOut*(camera: Camera, scale: float) =
   camera.zoom /= scale
 
-proc left*(camera: Camera): float =
-  camera.lookAt.x - (camera.size.x * 0.5)
+proc left*(camera: Camera): float = camera.lookAt.x
+proc right*(camera: Camera): float = camera.lookAt.x + camera.size.x
 
-proc right*(camera: Camera): float =
-  camera.lookAt.x + (camera.size.x * 0.5)
-
-proc top*(camera: Camera): float =
-  camera.lookAt.y - camera.size.y * 0.5
-
-proc bottom*(camera: Camera): float =
-  camera.lookAt.y + camera.size.y * 0.5
+proc top*(camera: Camera): float = camera.lookAt.y
+proc bottom*(camera: Camera): float = camera.lookAt.y + camera.size.y
 
 proc bounds*(camera: Camera): Rect =
   result = rect(camera.left(), camera.top(), camera.size.x, camera.size.y)
@@ -45,8 +39,8 @@ proc updateCamera*(camera: Camera, windowSize: IVec2) =
     camera.lookAt.y = -windowSize.y.float / 2.0
 
   # if mouseWheelScrollDelta().y != 0:
-  #   if mouseWheelScrollDelta().y > 0: 
+  #   if mouseWheelScrollDelta().y > 0:
   #     camera.zoomIn(1.1)
-  #   else: 
+  #   else:
   #     camera.zoomOut(1.1)
 

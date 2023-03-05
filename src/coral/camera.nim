@@ -16,11 +16,11 @@ proc zoomIn*(camera: Camera, scale: float) =
 proc zoomOut*(camera: Camera, scale: float) =
   camera.zoom /= scale
 
-proc left*(camera: Camera): float = -camera.lookAt.x - camera.size.x / 2.0
-proc right*(camera: Camera): float = -camera.lookAt.x + camera.size.x / 2.0
+proc left*(camera: Camera): float = -camera.lookAt.x - (camera.size.x / 2.0) / camera.zoom
+proc right*(camera: Camera): float = -camera.lookAt.x + (camera.size.x / 2.0) / camera.zoom
 
-proc top*(camera: Camera): float = -camera.lookAt.y - camera.size.y / 2.0
-proc bottom*(camera: Camera): float = -camera.lookAt.y + camera.size.y / 2.0
+proc top*(camera: Camera): float = -camera.lookAt.y - (camera.size.y / 2.0) / camera.zoom
+proc bottom*(camera: Camera): float = -camera.lookAt.y + (camera.size.y / 2.0) / camera.zoom
 
 proc bounds*(camera: Camera): Rect =
   result = rect(camera.left(), camera.top(), camera.size.x, camera.size.y)

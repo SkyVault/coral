@@ -106,7 +106,8 @@ proc drawSprite*(artist: Artist, pos: Vec2, imageId: string, region: Rect,
     tint = BrightWhite, rotation = 0.0) =
   let key = spriteKey(imageId, region)
   addImageIfNew(artist, key, () => renderSprite(artist.resourcePack[imageId].image, region))
-  artist.bxy.drawImage(key, pos = pos, tint)
+  transform(artist, pos, vec2(region.w, region.h), rotation):
+    artist.bxy.drawImage(key, pos = pos, tint)
 
 proc drawRect*(artist: Artist, pos, size: Vec2, tint = BrightWhite,
     rotation = 0.0, cornerRadius = 0.0) =
